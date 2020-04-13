@@ -80,6 +80,8 @@ class Solver(object):
                 # t2 = time.time()
                 _, loss_value = sess.run([train_op, self.total_loss], feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313})
                                                                                  # self.prior_boost_nongray:prior_boost_nongray})
+                
+                print("-----------loss = --------------", loss_value)
                 # duration = time.time() - start_time
                 # t3 = time.time()
                 # print('io: ' + str(t2 - t1) + '; compute: ' + str(t3 - t2))
@@ -100,9 +102,11 @@ class Solver(object):
                 #     summary_writer.add_summary(summary_str, step)
 
                 # Save the model checkpoint periodically.
-                if step % 500 == 0:
+                if step % 20 == 0:
                     checkpoint_path = os.path.join(self.train_dir, 'model.ckpt')
                     saver.save(sess, checkpoint_path, global_step=step)
+            checkpoint_path = os.path.join(self.train_dir, 'model.ckpt')
+            saver.save(sess, checkpoint_path, global_step=step)
             return
 
 

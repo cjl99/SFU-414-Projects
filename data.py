@@ -27,7 +27,7 @@ class Dataset(object):
         # self.batches_original = list()
         # self.batches_processed = list()
         # self.oneBatch = list()
-        self.counter = 3005
+        self.counter = 0
 
     def processed_color(self, img):
         # 图像组成：红绿蓝  （RGB）三原色组成    亮度（255,255,255）
@@ -91,9 +91,9 @@ class Dataset(object):
         R = (R / 32).astype(int)
         G = (G / 32).astype(int)
         B = (B / 32).astype(int)
-        print("R=",R.shape)
+        # print("R=",R.shape)
         prob = np.zeros([self.image_size, self.image_size, classes_num])
-        print("prob=",prob.shape)
+        # print("prob=",prob.shape)
         classes = 4 * B + 2 * G + R
         for i in range(classes.shape[0]):
             for j in range(classes.shape[1]):
@@ -103,21 +103,22 @@ class Dataset(object):
     def generate_batches(self):
         # batch_xs = image_space = [batch_size, height, width, 3]
         # batch_ys = prob
+        self.counter += 1
         image_path = './images/' + str(self.counter) + ".png"
         img = Image.open(image_path)
         img.resize((self.image_size, self.image_size))
-        self.counter += 1
+        
         images = self.processed_color(img)
         images = np.resize(images, [1, self.image_size, self.image_size, 1])
         images = np.array(images)
         img = np.array(img)
         probs = self.convert_original(img)
         probs = np.resize(probs, [1, self.image_size, self.image_size, 512])
-        while self.counter % self.batch_size != 0:
+        while self.counter % (self.batch_size) != 0:
+            self.counter += 1
             image_path = './images/' + str(self.counter) + ".png"
             img = Image.open(image_path)
             img.resize((self.image_size, self.image_size))
-            self.counter += 1
             image = self.processed_color(img)
             image = np.array(image)
             image = np.resize(image, [1, self.image_size, self.image_size, 1])

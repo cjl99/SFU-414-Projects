@@ -51,7 +51,7 @@ conv8_313 = autocolor.conv_net(data_l)
 
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, './model.ckpt-0')
+    saver.restore(sess, './models/model.ckpt-0')
     conv8_313 = sess.run(conv8_313)
 
 # img_rgb = decode(data_l, conv8_313, 2.63)
