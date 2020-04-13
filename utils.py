@@ -1,0 +1,33 @@
+import configparser
+
+def get_params(conf_file):
+
+  common_params = {}
+  dataset_params = {}
+  net_params = {}
+  solver_params = {}
+
+  #configure_parser
+  config = configparser.ConfigParser()
+  config.read(conf_file)
+
+  #sections and options
+  for section in config.sections():
+    #construct common_params
+    if section == 'Common':
+      for option in config.options(section):
+        common_params[option] = config.get(section, option)
+    #construct dataset_params
+    if section == 'DataSet':
+      for option in config.options(section):
+        dataset_params[option] = config.get(section, option)
+    #construct net_params
+    if section == 'Net':
+      for option in config.options(section):
+        net_params[option] = config.get(section, option)
+    #construct solver_params
+    if section == 'Solver':
+      for option in config.options(section):
+        solver_params[option] = config.get(section, option)
+
+  return common_params, dataset_params, net_params, solver_params
