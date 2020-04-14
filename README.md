@@ -1,6 +1,5 @@
 # 414Project
 
-
 # --Train--
 run python crawl_data.py to get images and save in ./images/
 run python run.py to train the model (need tensorflow environment)
@@ -12,7 +11,7 @@ some functions  --- utils.py
 # --Test--
 run python test.py 
 to test the pre-trained model
-the pre-trained model is in Google Drive. You can download it there
+the pre-trained model is in Google Drive. You can download it there. https://drive.google.com/open?id=15bzDLEz_XKNN_eVS3lHntlDpJJqlpQwx
 The result will be color.jpg
 
 
