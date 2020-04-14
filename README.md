@@ -10,7 +10,7 @@
 
 # --Test--
 1. run python test.py to test the pre-trained model
-2. the pre-trained model is in Google Drive. You can download it there. https://drive.google.com/open?id=15bzDLEz_XKNN_eVS3lHntlDpJJqlpQwx
-3. The result will be color.jpg
+- the pre-trained model is in Google Drive. You can download it there. https://drive.google.com/open?id=15bzDLEz_XKNN_eVS3lHntlDpJJqlpQwx
+- The result will be color.jpg
 
 
