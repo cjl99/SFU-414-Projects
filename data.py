@@ -6,7 +6,7 @@ if float(tf.__version__[0:3]) >= 2:
 
     tf.disable_v2_behavior()
 import threading
-
+from skimage import color
 from PIL import Image
 import os
 from PIL import ImageFilter
@@ -27,7 +27,7 @@ class Dataset(object):
         # self.batches_original = list()
         # self.batches_processed = list()
         # self.oneBatch = list()
-        self.counter = 0
+        self.counter = 3006
 
     def processed_color(self, img):
         # 图像组成：红绿蓝  （RGB）三原色组成    亮度（255,255,255）
@@ -91,44 +91,89 @@ class Dataset(object):
         R = (R / 32).astype(int)
         G = (G / 32).astype(int)
         B = (B / 32).astype(int)
-        # print("R=",R.shape)
+        print("R=",R.shape)
         prob = np.zeros([self.image_size, self.image_size, classes_num])
-        # print("prob=",prob.shape)
+        print("prob=",prob.shape)
         classes = 4 * B + 2 * G + R
         for i in range(classes.shape[0]):
             for j in range(classes.shape[1]):
                 prob[i][j][classes[i][j]] = 1
         return prob
 
-    def generate_batches(self):
-        # batch_xs = image_space = [batch_size, height, width, 3]
-        # batch_ys = prob
-        self.counter += 1
-        image_path = './images/' + str(self.counter) + ".png"
-        img = Image.open(image_path)
-        img.resize((self.image_size, self.image_size))
-        
-        images = self.processed_color(img)
-        images = np.resize(images, [1, self.image_size, self.image_size, 1])
-        images = np.array(images)
-        img = np.array(img)
-        probs = self.convert_original(img)
-        probs = np.resize(probs, [1, self.image_size, self.image_size, 512])
-        while self.counter % (self.batch_size) != 0:
-            self.counter += 1
+    def get_one_valid_img(self):
+        while True:
             image_path = './images/' + str(self.counter) + ".png"
             img = Image.open(image_path)
-            img.resize((self.image_size, self.image_size))
-            image = self.processed_color(img)
-            image = np.array(image)
-            image = np.resize(image, [1, self.image_size, self.image_size, 1])
-            img = np.array(img)
-            prob = self.convert_original(img)
-            prob = np.resize(prob, [1, self.image_size, self.image_size, 512])
-            # print("prob shape:", prob.shape)
-            # print("probs shape:", probs.shape)
-            # print("image shape:", image.shape)
-            # print("images shape:", images.shape)
-            images = np.concatenate((images, image), axis=0)
-            probs = np.concatenate((probs, prob), axis=0)
-        return images, probs
+            self.counter += 1
+            if len(img.split()) == 3:
+                return img
+
+    def generate_batches(self):
+        i = 0
+        gray_images = list()
+        probs = list()
+        # prior = list()
+        while i<5:
+            i+=1
+            img = self.get_one_valid_img()
+            img.resize(((self.image_size, self.image_size))) # [256, 256, 3]
+            # gray [256, 256, 1]
+            gray_img = self.processed_color(img)
+            gray_img = np.resize(gray_img, [self.image_size, self.image_size, 1])
+            gray_img = np.array(gray_img)
+            gray_images.append(gray_img)
+            # prob [256, 256, 512]
+            prob = np.array(img)
+            prob = self.convert_original(prob)
+            prob = np.resize(prob, [self.image_size, self.image_size, 512])
+            probs.append(prob)
+            # prior [256, 256, 512]
+            # rgb2lab
+            # img_lab = color.rgb2lab(img)
+            # data_ab = img_lab[ :, :, 1:]
+        probs = np.array(probs)
+        gray_images = np.array(gray_images)
+        # print(probs.shape,gray_images.shape)
+        return gray_images, probs
+
+    #
+    # def generate_batches(self):
+    #     # batch_xs = image_space = [batch_size, height, width, 3]
+    #     # batch_ys = prob
+    #     i = 0
+    #     while True:
+    #         image_path = './images/' + str(self.counter) + ".png"
+    #         img = Image.open(image_path)
+    #         self.counter += 1
+    #         if len(img.split())==3:
+    #             break
+    #     i += 1
+    #     img.resize((self.image_size, self.image_size))
+    #     images = self.processed_color(img)
+    #     images = np.resize(images, [1, self.image_size, self.image_size, 1])
+    #     images = np.array(images)
+    #     img = np.array(img)
+    #     probs = self.convert_original(img)
+    #     probs = np.resize(probs, [1, self.image_size, self.image_size, 512])
+    #     while i % self.batch_size != 0:
+    #         while True:
+    #             image_path = './images/' + str(self.counter) + ".png"
+    #             img = Image.open(image_path)
+    #             self.counter += 1
+    #             if len(img.split())==3:
+    #                 break
+    #         i += 1
+    #         img.resize((self.image_size, self.image_size))
+    #         image = self.processed_color(img)
+    #         image = np.array(image)
+    #         image = np.resize(image, [1, self.image_size, self.image_size, 1])
+    #         img = np.array(img)
+    #         prob = self.convert_original(img)
+    #         prob = np.resize(prob, [1, self.image_size, self.image_size, 512])
+    #         # print("prob shape:", prob.shape)
+    #         # print("probs shape:", probs.shape)
+    #         # print("image shape:", image.shape)
+    #         # print("images shape:", images.shape)
+    #         images = np.concatenate((images, image), axis=0)
+    #         probs = np.concatenate((probs, prob), axis=0)
+    #     return images, probs
