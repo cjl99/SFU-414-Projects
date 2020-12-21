@@ -1,7 +1,7 @@
 # 414Project
 
-* the result is not good enough... *
-* may be improved later... *
+* the result is not good enough...
+* may be improved later...
 
 # --Train--
 1. run python crawl_data.py to get images and save in ./images/
